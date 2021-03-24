@@ -31,11 +31,23 @@ open class BottomSheetViewController: UIViewController {
         addChild(contentViewController)
         contentViewController.didMove(toParent: self)
     }
-
     public required init?(coder aDecoder: NSCoder) {
         preconditionFailure("init(coder:) has not been implemented")
     }
 
+    deinit {
+        UIDevice.current.endGeneratingDeviceOrientationNotifications()
+    }
+
+    @objc private func handleOrientationChanged() {
+        if currentState == .collapse {
+            let windowFrame = self.view.window?.frame ?? .zero
+            let windowWidth = windowFrame.width
+            let windowHeight = windowFrame.height
+            view.frame = CGRect(x: 0, y: windowHeight - 200, width: windowWidth, height: 200)
+             view.layoutIfNeeded();
+        }
+    }
     open override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -60,6 +72,8 @@ open class BottomSheetViewController: UIViewController {
             containerView.topAnchor.constraint(equalTo: view.topAnchor),
             containerView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
+        UIDevice.current.beginGeneratingDeviceOrientationNotifications()
+        NotificationCenter.default.addObserver(self, selector: #selector(handleOrientationChanged), name: UIDevice.orientationDidChangeNotification, object: nil)
     }
 
     @objc private func handlePan(gesture: UIPanGestureRecognizer) {
