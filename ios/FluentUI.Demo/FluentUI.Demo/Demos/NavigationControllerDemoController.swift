@@ -153,6 +153,7 @@ class NavigationControllerDemoController: DemoController {
             controller.view.addGestureRecognizer(leadingEdgeGesture)
         }
 
+        self.view.window?.setColorProvider(DemoColorGreenTheme())
         present(controller, animated: false)
 
         return controller
@@ -345,6 +346,7 @@ class RootViewController: UIViewController, UITableViewDataSource, UITableViewDe
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+
         if let indexPath = tableView.indexPathForSelectedRow {
             tableView.deselectRow(at: indexPath, animated: true)
         }
@@ -449,8 +451,10 @@ class RootViewController: UIViewController, UITableViewDataSource, UITableViewDe
         } else {
             let controller = ChildViewController()
             if navigationItem.accessoryView == nil {
+                
                 controller.navigationItem.navigationBarStyle = .system
             }
+            self.view.window?.setColorProvider(DemoColorDefaultTheme())
             navigationController?.pushViewController(controller, animated: true)
         }
     }
@@ -632,6 +636,11 @@ extension RootViewController: SearchBarDelegate {
 // MARK: - ChildViewController
 
 class ChildViewController: UITableViewController {
+    override func viewWillDisappear(_ animated: Bool) {
+        self.view.window?.setColorProvider(DemoColorGreenTheme())
+        super.viewWillDisappear(animated)
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
         tableView.contentInsetAdjustmentBehavior = .never
