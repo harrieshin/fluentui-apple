@@ -6,9 +6,35 @@
 import FluentUI
 import UIKit
 
+class MessageView: UILabel {
+    public func updateFontMaxSize(_ size: CGFloat) {
+         // get the textStyle of the current font
+         guard let style = font.fontDescriptor.object(forKey: .textStyle) as? UIFont.TextStyle else {
+             return
+         }
+         let fontMetrics: UIFontMetrics = UIFontMetrics.init(forTextStyle: style)
+        font = fontMetrics.scaledFont(for: self.font, maximumPointSize: size)
+         adjustsFontForContentSizeCategory = true
+     }
+}
+
 class LabelDemoController: DemoController {
+        
     private var dynamicLabels = [Label]()
     private var textColorLabels = [Label]()
+
+    private let previewSpeakerNameMessageView: MessageView = {
+        // Create Label for SpeakerName
+        let speakerNameMessageView = MessageView()
+        speakerNameMessageView.textAlignment = .left
+        speakerNameMessageView.font = .fluent(FluentTheme().aliasTokens.typography[.caption1])
+        speakerNameMessageView.textColor = UIColor(dynamicColor: speakerNameMessageView.fluentTheme.aliasTokens.colors[.foreground3])
+        speakerNameMessageView.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+        speakerNameMessageView.updateFontMaxSize(17.0)
+        speakerNameMessageView.isAccessibilityElement = false
+        return speakerNameMessageView
+    }()
+    
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -33,6 +59,8 @@ class LabelDemoController: DemoController {
         container.addArrangedSubview(UIView())  // spacer
 
         NotificationCenter.default.addObserver(self, selector: #selector(handleContentSizeCategoryDidChange), name: UIContentSizeCategory.didChangeNotification, object: nil)
+        
+        container.addArrangedSubview(previewSpeakerNameMessageView)
     }
 
     @discardableResult
